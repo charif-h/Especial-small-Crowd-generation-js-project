@@ -1,0 +1,482 @@
+
+<html >
+	<head>
+		<style type="text/css">
+		  .ball {
+				position:absolute;
+				border-color:black;
+				border-style:solid;
+				border-width:1px;
+				width:30px; 
+				height:30px; 
+				border-radius: 16px;
+			}
+			
+			.face {
+				position:absolute;
+				border-color:black;
+				border-style:solid;
+				border-width:1px;
+				padding:4px;
+				z-index: 0;
+			}
+			.cadre {
+				position:absolute;
+				z-index: 0;
+			}
+			
+			.eye {
+				position:absolute;
+				border-color:black;
+				background-color:white;
+				border-style:solid;
+				border-width:1px;
+				padding:1px;
+				border-radius: 3px;
+			}
+			
+			.pupil {
+				position:absolute;
+				width:4px; 
+				height:4px; 
+				border-radius: 2px;
+				align:center;
+			}
+			
+			.mouth {
+				position:absolute;
+			}
+		</style>
+	</head>
+	<body style="background-color:rgb(224, 224, 224);overflow-y: scroll; overflow-x: hidden;">
+		<div id="society" align="center" style="background-color:Cornsilk;width:1500;height:700;">
+			
+		</div>
+		<div id="test"></div>
+		<input type="text" value="25" id="number"/>
+		<input id="go" type="button" style="left:170px; position:absolute;" onclick="start();" value="Goo"> </input>
+		<script type="text/javascript">
+			var Creature = (function(){
+				var globW = document.getElementById("society").clientWidth;
+				var globH = document.getElementById("society").clientHeight;
+				
+				function Creature(){
+					this.speed = Math.round(200*Math.random());
+					this.love = Math.round(255*Math.random());
+					this.agresivity = Math.round(255*Math.random());
+					this.power = Math.round(255*Math.random());
+					this.energy = Math.round(255*Math.random());
+					this.basicEnergy = this.energy;
+					this.angle = 90*Math.random();
+					this.Movangle = Math.random();
+					if(this.Movangle > 0.75){
+						this.Movangle = 360 - this.angle;
+					}else if(this.Movangle > 0.5){
+						this.Movangle = 180 + this.angle;
+					}else if(this.Movangle > 0.25){
+						this.Movangle = 180 - this.angle;
+					}else{
+						this.Movangle = this.angle;
+					}
+					this.id = Math.random();
+					this.top = Math.round(globH*Math.random());
+					this.left = Math.round(globW*Math.random());
+					this.speed = 2 + Math.round(13*Math.random());
+
+					this.cred = Math.round(255*Math.random());
+					this.cblue = Math.round(255*Math.random());
+					this.cgreen = Math.round(255*Math.random());
+					
+					this.diam = 5 + Math.round(25*Math.random());
+					this.h = 25 + Math.round(15*Math.random());
+					this.w = 25 + Math.round(15*Math.random());
+					this.eyeh = Math.round(6*Math.random()) + 4;
+					this.eyew = Math.round(6*Math.random()) + 4;
+
+					this.diam = 5 + gausianRand(25, 10);
+					this.h = gausianRand(25, 15, 5);
+					this.w = gausianRand(25, 15, min=5);
+					this.eyeh = gausianRand(6, 4, 2);
+					this.eyew = gausianRand(6, 4, 2);
+
+					
+					this.eyeColorR = Math.round(255*Math.random());
+					this.eyeColorG = Math.round(255*Math.random());
+					this.eyeColorB = Math.round(255*Math.random());
+					this.mouthTop = Math.round(15*Math.random()) - 7;
+					this.mouthButtom = Math.round(15*Math.random()) - 7; 
+						
+					this.alive = true;
+					this.adult = -4;
+				};
+				
+				Creature.prototype.inheret = function(A,B){
+					//this = new Creature();
+					var love = Math.abs(A.love - B.love);
+					var war = Math.abs(A.agresivity - B.agresivity);
+					
+					this.diam = 5 + Math.round(25*Math.random());
+					/*this.h = 10 + Math.round(30*Math.random());
+					this.w = 10 + Math.round(30*Math.random());
+					this.eyeh = Math.round(6*Math.random()) + 4;
+					this.eyew = Math.round(6*Math.random()) + 4;
+					this.eyeColorR = Math.round(255*Math.random());
+					this.eyeColorG = Math.round(255*Math.random());
+					this.eyeColorB = Math.round(255*Math.random());*/
+						
+					this.alive = true;
+					this.adult = -4;
+					
+					this.left = Math.min(Math.max(parseInt(A.left), parseInt(B.left)) + 50, globW);
+					this.top = Math.min(Math.max(parseInt(A.top) , parseInt(B.top)) + 50, globH);
+
+					this.cred = Math.floor(inherit(A.cred, B.cred, 0, 255));
+					this.cblue = Math.floor(inherit(A.cblue, B.cblue, 0, 255));
+					this.cgreen = Math.floor(inherit(A.cgreen, B.cgreen, 0, 255));
+
+					this.love = Math.floor(inherit(A.love, B.love, 0, 255));
+					this.agresivity = Math.floor(inherit(A.agresivity, B.agresivity, 0, 255));
+
+					
+					if(Math.random() > mutation){
+						var po = Math.abs(A.power - B.power);
+						this.power = Math.min(Math.max(0,Math.min(parseInt(A.power),parseInt(B.power))-10 + Math.round((po+10)*Math.random()),0),255);
+					}
+					
+					if(Math.random() > mutation){
+						var po = Math.abs(A.energy - B.energy);
+						this.energy = Math.min(Math.max(0,Math.min(parseInt(A.energy),parseInt(B.energy))-10 + Math.round((po+10)*Math.random()),0),255);
+						this.basicEnergy = this.energy;
+					}
+
+					this.h = inherit(A.h, B.h, 5);
+					this.w = inherit(A.w, B.w, 5);
+
+					this.eyeh = inherit(A.eyeh, B.eyeh, 2);
+					this.eyew = inherit(A.eyew, B.eyew, 2);
+
+					this.eyeColorR = Math.floor(inherit(A.eyeColorR, B.eyeColorR, 0, 255));
+					this.eyeColorG = Math.floor(inherit(A.eyeColorG, B.eyeColorG, 0, 255));
+					this.eyeColorB = Math.floor(inherit(A.eyeColorB, B.eyeColorB, 0, 255));
+					
+					/*if(Math.random() > mutation){
+						var r = Math.abs(A.eyeColorR - B.eyeColorR);
+						var g = Math.abs(A.eyeColorG - B.eyeColorG);
+						var b = Math.abs(A.eyeColorB - B.eyeColorB);
+						this.eyeColorR = Math.min(Math.max(0,Math.min(parseInt(A.eyeColorR),parseInt(B.eyeColorR))-10 + Math.round((r+10)*Math.random()),0),255);
+						this.eyeColorG = Math.min(Math.max(0,Math.min(parseInt(A.eyeColorG),parseInt(B.eyeColorG))-10 + Math.round((g+10)*Math.random()),0),255);
+						this.eyeColorB = Math.min(Math.max(0,Math.min(parseInt(A.eyeColorB),parseInt(B.eyeColorB))-10 + Math.round((b+10)*Math.random()),0),255);
+						
+					}*/
+					
+					this.draw();
+					this.move();
+				};
+				
+				Creature.prototype.draw = function(){
+					if(this.alive == true){
+						//cadre
+						var cadre = document.createElement('div');
+						var cadre_type = "left:" + this.left + "px; top:" + this.top + "px;";
+						/*if(this.adult < 0){
+							cadre_type += "opacity:0.7;";
+						}else{
+							cadre_type += "opacity:1;";
+						}*/
+						cadre.setAttribute('id',this.id);
+						cadre.setAttribute('class','cadre');
+						cadre.setAttribute('style',cadre_type);
+						
+						//face
+						var face = document.createElement('canvas');
+						//var face_type = "background:radial-gradient(white,rgb(" + this.love + "," + this.agresivity + "," + this.power + "));";
+						//var face_type = "background-color:rgb(" + this.love + "," + this.agresivity + "," + this.power + ");";
+						var face_type = "background-color:rgb(" + this.cred + "," + this.cgreen + "," + this.cblue + ");";
+						face_type += "height:" + this.h + "px; width:" + this.w + "px; border-radius: " + Math.round((this.h + this.w)/2) + "px;";
+
+						face.setAttribute('class','face');
+						face.setAttribute('style',face_type);
+
+						//left eye
+						var left_eye = document.createElement('canvas');
+						var left_eye_type = "width:" + this.eyew + "px;height:" + this.eyeh + "px;left:3px;top:5px;";
+						left_eye.setAttribute('class','eye');
+						left_eye.setAttribute('style',left_eye_type);
+						left_eye.style.visibility = 'hidden';
+						
+						//right eye
+						var right_eye = document.createElement('canvas');
+						var right_eye_type = "width:" + this.eyew + ";height:" + this.eyeh + ";left:" + (this.w - this.eyew + 3) + "px;top:5px;";
+						right_eye.setAttribute('class','eye');
+						right_eye.setAttribute('style',right_eye_type);
+						right_eye.style.visibility = 'hidden';
+
+						//left pupil
+						var left_pupil = document.createElement('canvas');
+						var pupilc = "background-color:rgb(" + this.eyeColorR  + "," + this.eyeColorG + "," + this.eyeColorB + ");";
+						var left_pupil_type = "left:6px;top:8px;" + pupilc;
+						left_pupil.setAttribute('class','pupil');
+						left_pupil.setAttribute('style',left_pupil_type);
+						
+						//right pupil
+						var right_pupil = document.createElement('canvas');
+						var right_pupil_type = "left:" + (this.w - this.eyew + 6) + ";top:8;" + pupilc;
+						right_pupil.setAttribute('class','pupil');
+						right_pupil.setAttribute('style',right_pupil_type);
+						
+						//mouth
+						var mouth = document.createElement("canvas");
+						var ctx = mouth.getContext("2d");
+						ctx.beginPath();
+						ctx.moveTo(0, this.mouthTop);
+						ctx.bezierCurveTo(0, this.mouthButtom, this.w - 8, this.mouthButtom, this.w - 8, this.mouthTop);
+						ctx.lineWidth = 3;
+						//ctx.strokeStyle = '#' + RGB2HTML(255-this.love, 255-this.agresivity, 255-this.power);
+						ctx.stroke();
+						var mouth_type = "left:" + (8) + ";top:" + (this.h - 2 + 2) +"px;";
+						mouth.setAttribute('class','mouth');
+						mouth.setAttribute('style',mouth_type);
+						mouth.style.visibility = 'hidden';
+						
+						document.getElementById('society').appendChild(cadre);
+						cadre.appendChild(face);						
+						cadre.appendChild(left_eye);
+						cadre.appendChild(right_eye);
+						cadre.appendChild(left_pupil);
+						cadre.appendChild(right_pupil);
+						cadre.appendChild(mouth);
+					}
+				};
+				
+				Creature.prototype.move = function(){
+					if(this.alive == true){
+						var baisse = alives/5;
+						if((parseInt(this.top) + parseInt(this.h)) > globH){
+							this.energy -= baisse;
+							if(this.Movangle <= 90)
+								this.Movangle = 180 -  this.angle;
+							else
+								this.Movangle = 180 + this.angle;
+							this.adult++;
+						}else if(parseInt(this.top) < 0){
+							this.energy -= baisse;
+							if(this.Movangle <= 180)
+								this.Movangle = this.angle;
+							else
+								this.Movangle = 360 - this.angle;
+							this.adult++;
+						}else if((parseInt(this.left) + parseInt(this.w)) > globW){
+							this.energy -= baisse;
+							if(this.Movangle <= 90)
+								this.Movangle = 360 - this.angle;
+							else
+								this.Movangle = 180 + this.angle;
+							this.adult++;
+						}else if(parseInt(this.left) < 0){
+							this.energy -= baisse;
+							if(this.Movangle <= 270)
+								this.Movangle = 180 - this.angle;
+							else
+								this.Movangle = this.angle;
+							this.adult++;
+						}
+						
+						if(this.adult == 0){
+							visage = document.getElementById(this.id).children
+							for (var i = 1; i < visage.length; i++){
+								visage[i].style.visibility = 'visible'
+							}
+						}
+						
+
+						//document.getElementById(this.id).style.backgroundColor = "rgb(" + this.love + "," + this.agresivity + "," + this.power + ")";
+						
+						if(this.energy < 0){
+							this.alive = false;
+							//document.getElementById("log").value += this.id + " died\n";
+							alives--;
+						}
+						
+						this.left = parseInt(this.left)+ Math.round(parseInt(this.speed)*Math.sin(this.Movangle*Math.PI/180)) + 'px'; // pseudo-property code: Move right by 10px
+						this.top = parseInt(this.top)+ Math.round(parseInt(this.speed)*Math.cos(this.Movangle*Math.PI/180)) + 'px';
+
+						document.getElementById(this.id).style.left = this.left;
+						document.getElementById(this.id).style.top = this.top;
+						//document.getElementById(this.id).style.backgroundColor = "rgb(" + this.love + "," + this.agresivity + "," + this.power + ");";
+					}else{
+						var dead = document.getElementById(this.id);
+						dead.style.width = 0;
+						dead.style.height = 0;
+						dead.style.backgroundColor = "white";
+						dead.style.borderColor = "white";
+						//document.getElementById("log").value += dead.id + " is deleted\n";
+						dead.parentNode.removeChild(document.getElementById(this.id));
+					}
+				};
+				
+				Creature.prototype.getLeft = function(){
+					return this.left;
+				};
+				
+				Creature.prototype.getTop = function(){
+					return this.top;
+				};
+				
+				return Creature;
+			})();
+			
+			var society = new Array();
+			var alives = parseInt(document.getElementById("number").value);
+			var mutation = 0.08;
+			
+			function start(){
+				/*var society = (new creature(), new creature(), new creature());
+				document.getElementById("stop").value = society[0].id;*/
+				for(var i = 0; i < society.length; i++){
+					society[i].alive = false;
+					document.getElementById(society[i].id).parentNode.removeChild(document.getElementById(society[i].id));
+				}
+				alives = parseInt(document.getElementById("number").value);
+				for(var i = 0; i < alives; i++){
+					society[i] = new Creature();
+				}
+				
+				for(var i = 0; i < society.length; i++){
+					society[i].draw();
+				}
+			}
+			var move = self.setInterval(function(){doMove()},50); // call doMove() in 20 msec
+			
+			function doMove() {
+				for(var k = 0; k < society.length; k++){
+					society[k].move();
+				}
+				//contacts
+				for(var i = 0; i < society.length; i++){
+					for(var j = i + 1; j < society.length; j++){
+						if((i != j) && (society[i].alive == true) && (society[j].alive == true)){
+							/*if((Math.abs(parseInt(society[i].getLeft()) - parseInt(society[j].getLeft())) < (society[i].w + society[j].w)) &&
+								(Math.abs(parseInt(society[i].getTop()) - parseInt(society[j].getTop())) < (society[i].h + society[j].h))*/
+							var iLeft = parseInt(society[i].getLeft())
+							var iTop = parseInt(society[i].getTop())
+							var jLeft = parseInt(society[j].getLeft())
+							var jTop = parseInt(society[j].getTop())
+							if((Math.max(iLeft, jLeft) < Math.min(iLeft, jLeft) + Math.min(society[i].w, society[j].w)) &&
+								(Math.max(iTop, jTop) < Math.min(iTop, jTop) + Math.min(society[i].h, society[j].h))
+								){
+									var love = Math.abs(society[i].love - society[j].love);
+									var war = Math.abs(society[i].agresivity - society[j].agresivity);
+									if((love + alives < war) && (society[i].adult > 0) && (society[j].adult > 0)){
+										var x = society.length;
+										society[x] = new Creature();
+										society[x].inheret(society[i], society[j]);
+										alives++;
+										//document.getElementById("log").value += "new born\n";
+									}else if(love + alives >= war){
+										if((society[i].power < society[j].power) && (society[j].adult > 0)){
+											society[i].alive = false;
+											alives--;
+										}else if ((society[i].power > society[j].power) && (society[i].adult > 0)){
+											society[j].alive = false;
+											alives--;
+										}
+										
+									}
+							}
+						}
+					}
+				}
+				
+				var m = 0;
+				while(m < society.length){
+					if(society[m].alive == false){
+						society[m].move();
+						society.splice(m,1);
+					}else{
+						m++;
+					}
+				}
+				
+				//document.getElementById("stop").value = "(" + alives + ")";
+				document.title = "(" + alives + ")";
+			}
+			
+			/*function contact(a, b){
+				var xa = parseInt(a.left) + parseInt(a.w);
+				var ya = parseInt(a.top) + parseInt(a.h);
+				var xb = parseInt(b.left) + parseInt(b.w);
+				var yb = parseInt(b.top) + parseInt(b.h);
+				var distance = Math.sqrt((xa - xb)*(xa - xb) + (ya - yb)*(ya - yb));
+				if(distance <= (a.diam + b.diam)){
+					alert(distance  + " " + (a.diam + b.diam));
+					return true;
+				}else{
+					return false;
+				}
+			}*/
+			
+			function IntRandom(x){
+				return Math.floor((Math.random()*x));
+			}
+			
+			function RGB2HTML(red, green, blue)
+			{
+				var decColor = red + 256 * green + 65536 * blue;
+				return decColor.toString(16);
+			}
+
+			function gausianRand(mean=0, stdev=1, min= Number.NEGATIVE_INFINITY, max= Number.POSITIVE_INFINITY){
+				var u = 1 - Math.random();
+				var v = 1 - Math.random();
+
+				return Math.min(Math.max(Math.sqrt(-2.0 * Math.log(u))*Math.cos(2.0 * Math.PI * v)*stdev + mean, min), max);
+			}
+
+			function inherit(parent1, parent2, min= Number.NEGATIVE_INFINITY, max= Number.POSITIVE_INFINITY){
+				var mid = 0.5*Math.abs(parent1 - parent2)
+				var rang = max - min;
+				/*var std = mid
+				if(mid == 0){
+					if(rang != Infinity){
+						std = 0.1*rang
+					}else{
+						std = 1.0
+					}
+				}*/
+				var std = Math.max(1.0, mid);
+				if(max - min != Infinity){
+					std = Math.max(std, 0.1*(max-min))
+				}
+				var v = gausianRand(Math.min(parent1, parent2) + mid, std, min, max)
+				//console.log(v, " [", parent1, parent2, "] µ=", Math.min(parent1, parent2) + mid, " Q=", std, " min=", min, " max=", max)
+				return v
+			}
+		</script>
+		<div>
+			<h3>What the hell is this!!!</h3>
+			<p> A society of Bakis. Bakis are transgender virtual creatures that live isolated in a virtual environment. Each individual (baki) has his own character and behavior.
+				Bakis move in straight lines within their space, and bonus when they strike the borders, so they can't get out of this space. A baki has the following properties:
+				<ul>
+					<li>Height and width: determines only the physical size of the baki.</li>
+					<li>Speed: Baki's movement speed.</li>
+					<li>Attractness: determines how much this baki is attractive to other bakis.</li>
+					<li>Aggressiveness: determines how much this baki is aggressive with other bakis.</li>
+					<li>Power: determines how much this baki powerful in fights with other bakis.</li>
+					<li>Adult: determines if the baki can be engaged in a reproduction process.</li>
+					<li>Size and colors of the eyes</li>
+				</ul>
+			</p>
+			
+			<h4>Collision</h4>
+			<p>When two bakis collide, many things are probable. Depending on the character of collided bakbaks results can be:
+				<ol>
+					<li>If their Attractness values are closer to each other than their Aggressiveness values: then Attractness takes control, and they get many children immediately.</li>
+					<li>In the opposite case (Aggressiveness values are closer to each other than their Attractness values): then Aggressiveness takes control, and the most powerfull bakbak killes the other one.</li>
+				</ol>
+				
+				PS: the more you have bakbaks in the society, the more they become aggressive brutal to each other.
+			</p>
+		</div>
+	</body>
+</html>
+
